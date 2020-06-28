@@ -1,0 +1,18 @@
+{
+  "name": "nodejsexpress",
+  "version": "1.0.0",
+  "description": "Proyecto Bases Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rdojeda/nodejsexpress.git"
+  },
+  "author": "ojedaweb",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
