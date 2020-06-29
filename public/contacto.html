@@ -42,21 +42,18 @@
 				evento.preventDefault() ///desprograma el envio del hipervinculo o formulario JS toma el control
 
 				//const datos = new FormData([form]) OJO puede ser mejor
-				const datos = new FormData(evento.target)
+				const datos = Object.fromEntries( new FormData(evento.target) ) //Pasar de FormData a Object
+				//console.log( datos )
 
 				fetch(evento.target.action, {
 					method: evento.target.method,
-					body: datos,
+					body: JSON.stringify(datos), //pasar de objeto a JSON
 					headers: {
-					"Content-type" : "application/x-www-form-urlencoded"
+					"Content-type" : "application/json"
 					},
 									
 				}).then( rta => rta.json() ).then( data =>{
-					if ( data.rta == 'OK'){
-						alert('Envio exitoso!')
-					} else {
-						alert('Fallo el envio!!')
-					}
+					alert( data.rta )
 				})				
 								
 			})
