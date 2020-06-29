@@ -34,8 +34,27 @@
 
 			<br>
 
-			<input class="btn btn-primary" type="submit" value="Done!">
+			<input class="btn btn-primary" type="submit" value="Enviar!">
 
 		</form>
+		<script>
+			document.querySelector('form').addEventListener('submit', (evento) =>{
+				evento.preventDefault() ///desprograma el envio del hipervinculo o formulario
+
+				//const datos = new FormData([form]) OJO puede ser mejor
+				const datos = new FormData(evento.target)
+				
+				fetch(evento.target.action, {
+					method: evento.target.method,
+					body: datos
+				}).then( rta => rta.json() ).then( data =>{
+					if ( data.rta == 'OK'){
+						alert('Envio exitoso!')
+					}
+				})				
+								
+			})
+
+		</script>
 	</body>
 </html>
