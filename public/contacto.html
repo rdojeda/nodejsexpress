@@ -39,17 +39,23 @@
 		</form>
 		<script>
 			document.querySelector('form').addEventListener('submit', (evento) =>{
-				evento.preventDefault() ///desprograma el envio del hipervinculo o formulario
+				evento.preventDefault() ///desprograma el envio del hipervinculo o formulario JS toma el control
 
 				//const datos = new FormData([form]) OJO puede ser mejor
 				const datos = new FormData(evento.target)
-				
+
 				fetch(evento.target.action, {
 					method: evento.target.method,
-					body: datos
+					body: datos,
+					headers: {
+					"Content-type" : "application/x-www-form-urlencoded"
+					},
+									
 				}).then( rta => rta.json() ).then( data =>{
 					if ( data.rta == 'OK'){
 						alert('Envio exitoso!')
+					} else {
+						alert('Fallo el envio!!')
 					}
 				})				
 								
