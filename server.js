@@ -13,14 +13,19 @@ const json = express.json()
 
 const url = ` mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASS}@${process.env.MONGO_DB_HOST}/${process.env.MONGO_DB_BASE}?retryWrites=true&w=majority`;
 
-let DB = null
+const connectDb = async () => {
+
+    const client = await MongoClient.connect(url, { useUnifiedTopology: true })
     
-MongoClient.connect(url, { useUnifiedTopology: true }, function (
-  error,
-  client
-) {
-  DB = client.db("MercadoTech");
-});
+    DB = await client.db('MercadoTech')
+}
+
+
+let DB = null
+
+connectDb()
+
+
 console.log('El servidor de MongoDB es:')
 console.log( process.env.MONGO_DB_HOST )
 
@@ -28,12 +33,15 @@ server.use( json )
 server.use( urlencoded )
 server.listen( 5000 )
 
-server.get('/api', (req, res) => { // Obtener los datos
+server.get('/api', async (req, res) => { // Obtener los datos
     
-    res.json( DB.collection('Productos').find({}).toArray() )
+    const productos = await DB.collection('Productos')
+    const resultado = await productos.find({}).toArray()
+
+    res.json( resultado )
 }) 
 
-server.post('/api', (req, res) => {  // Crear con datos
+server.post('/api', async (req, res) => {  // Crear con datos
     /*Requisitos el id 
         único
         irrepetible
@@ -48,7 +56,7 @@ server.post('/api', (req, res) => {  // Crear con datos
     console.log( DB )
     res.json({ rta : 'OK creando datos POST' })
 })
-server.put('/api', (req, res) => { // Actualizar con datos 
+server.put('/api', async (req, res) => { // Actualizar con datos 
     const datos = req.body
 
     const encontrado =   DB.find(producto => producto.id == datos.id )
@@ -57,7 +65,7 @@ server.put('/api', (req, res) => { // Actualizar con datos
     res.json({  rta : 'OK actualizado el producto' })
 }) 
     
-server.delete('/api', (req, res) => { // Eliminar los datos
+server.delete('/api', async (req, res) => { // Eliminar los datos
     res.json({  rta : 'OK eliminado el producto'  })
 }) 
 
