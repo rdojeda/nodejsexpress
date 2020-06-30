@@ -11,7 +11,7 @@ const json = express.json()
 
 //MongoClient.paraHacerCosasLocas()
 
-const url = ` mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASS}@${process.env.MONGO_DB_HOST}/${process.env.MONGO_DB_BASE}?retryWrites=true&w=majority`;
+const url = `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASS}@${process.env.MONGO_DB_HOST}/${process.env.MONGO_DB_BASE}?retryWrites=true&w=majority`;
 
 const connectDb = async () => {
 
@@ -49,13 +49,18 @@ server.post('/api', async (req, res) => {  // Crear con datos
     */
 
     const datos = req.body
-    //faltan las validaciones 
-    const id = new Date().getTime()
-
-    DB.push({ id, ...datos })
-    console.log( DB )
-    res.json({ rta : 'OK creando datos POST' })
+    //aca van las validaciones 
+    const productos = await DB.collection('Productos')
+    
+    const { result }= await productos.insertOne(datos)
+    
+    res.json({ rta : result.ok })
 })
+
+server.get('/api/:id', async (req, res) => {
+    res.end(`El producto a buscar por id es: ${req.params.id} `)    
+})
+
 server.put('/api', async (req, res) => { // Actualizar con datos 
     const datos = req.body
 
