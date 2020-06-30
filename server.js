@@ -6,6 +6,7 @@ const json = express.json()
 
 const DB = []
 
+console.log( DB )
 
 server.use( json )
 server.use( urlencoded )
@@ -16,17 +17,31 @@ server.get('/api', (req, res) => { // Obtener los datos
 }) 
 
 server.post('/api', (req, res) => {  // Crear con datos
+    /*Requisitos el id 
+        único
+        irrepetible
+        Autoasignable
+    */
+
+
+
     const datos = req.body
     //faltan las validaciones 
+    const id = new Date().getTime()
 
-    DB.push(datos)
-    
+    DB.push({ id, ...datos })
+    console.log( DB )
     res.json({ rta : 'OK creando datos POST' })
 })
 server.put('/api', (req, res) => { // Actualizar con datos 
-    res.json({  rta : 'Acá vas a actualizar productos ' })
+    const datos = req.body
+
+    const encontrado =   DB.find(producto => producto.id == datos.id )
+    encontrado.stock = datos.stock
+
+    res.json({  rta : 'OK actualizado el producto' })
 }) 
     
 server.delete('/api', (req, res) => { // Eliminar los datos
-    res.json({  rta : 'Acá vas eliminar productos'  })
+    res.json({  rta : 'OK eliminado el producto'  })
 }) 
