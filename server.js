@@ -70,16 +70,26 @@ server.get('/api/:id', async (req, res) => {
     res.json( resultado )    
 })
 
-server.put('/api', async (req, res) => { // Actualizar con datos 
-    const datos = req.body
+server.put('/api/:id', async (req, res) => { // Actualizar con datos 
+    const ID = req.params.id 
+    const datos = req.body 
+    
+    const productos = await DB.collection('Productos');
 
-    const encontrado =   DB.find(producto => producto.id == datos.id )
-    encontrado.stock = datos.stock
+    const query = { '_id': ObjectId(ID) }
+    
+    const update = {
+        $set: { ...datos }
+    }
 
-    res.json({  rta : 'OK actualizado el producto' })
+
+    const { result } = await productos.updateOne( query, update )
+
+  
+    res.json({  rta : result.ok })
 }) 
     
 server.delete('/api', async (req, res) => { // Eliminar los datos
-    res.json({  rta : 'OK eliminado el producto'  })
+    res.json({  rta : result.ok  })
 }) 
 
