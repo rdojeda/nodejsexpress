@@ -7,10 +7,7 @@ const urlencoded = express.urlencoded({ extended: true })
 const json = express.json()
 
 
-//mongodb+srv://Dbojedaweb:rdo0j3d6@cluster0.xqb2m.mongodb.net/Cluster0?retryWrites=true&w=majority
 //en Robo 3T create conexión en Name MongoDb Atlas address cargar  cluster0.xqb2m.mongodb.net mantener port 27017
-
-//MongoClient.paraHacerCosasLocas()
 
 const url = `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASS}@${process.env.MONGO_DB_HOST}/${process.env.MONGO_DB_BASE}?retryWrites=true&w=majority`;
 
@@ -74,7 +71,7 @@ server.put('/api/:id', async (req, res) => { // Actualizar con datos
     const ID = req.params.id 
     const datos = req.body 
     
-    const productos = await DB.collection('Productos');
+    const productos = await DB.collection('Productos')
 
     const query = { '_id': ObjectId(ID) }
     
@@ -82,14 +79,22 @@ server.put('/api/:id', async (req, res) => { // Actualizar con datos
         $set: { ...datos }
     }
 
-
     const { result } = await productos.updateOne( query, update )
-
   
     res.json({  rta : result.ok })
 }) 
+
+
+server.delete('/api/:id', async (req, res) => { // Eliminar los datos
+
+     const ID = req.params.id;
+         
+     const productos = await DB.collection('Productos')
+
+    const query = { '_id' : ObjectId(ID)}
     
-server.delete('/api', async (req, res) => { // Eliminar los datos
-    res.json({  rta : result.ok  })
+    const result = await productos.findOneAndDelete(query);
+
+    res.json({ rta: result.ok })
 }) 
 
