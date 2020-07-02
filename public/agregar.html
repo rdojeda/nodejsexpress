@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>MercadoTech - Gestor de Productos</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	</head>
+	<body class="container">
+		<h1>Nuevo Producto</h1>
+		<form action="http://localhost:5000/api" method="post">
+
+			<label for="nombre">Ingrese nombre Producto :</label>
+			<input class="form-control" type="text" name="nombre" placeholder="Ej: Jugo de Uva">
+			
+			<br>
+
+			<label for="stock">Ingrese stock</label>
+			<input class="form-control" type="stock" name="stock" placeholder="Ej: 9999">
+
+			<br>
+			<br>
+
+			<label for="precio">Ingrese precio</label>
+			<input class="form-control" type="precio" name="precio" placeholder="Ej: 15.99">
+
+			<br>
+
+
+
+			<label for="marca">Elija una marca:</label>
+			<select class="form-control" name="marca">
+				<option value="apple">Apple</option>
+				<option value="samsung">Samsung</option>
+				<option value="google">Google</option>
+				<option value="lg">LG</option>
+			</select>
+
+			<br>
+
+			<label for="detalle">Ingrese un detalle:</label>
+			<textarea class="form-control" name="detalle" cols="30" rows="10" placeholder="Max: 100 caracteres"></textarea>
+
+			<br>
+
+			<input class="btn btn-primary" type="submit" value="Agregar">
+
+		</form>
+		<script>
+			document.querySelector('form').addEventListener('submit', async (evento) =>{
+				evento.preventDefault() ///desprograma el envio del hipervinculo o formulario JS toma el control
+
+				//const datos = new FormData([form]) OJO puede ser mejor
+				const datos = Object.fromEntries( new FormData(evento.target) ) //Pasar de FormData a Object
+				//console.log( datos )
+				/*
+				fetch(evento.target.action, {
+					method: evento.target.method,
+					body: JSON.stringify(datos), //pasar de array Objects a JSON
+					headers: {
+					"Content-type" : "application/json"
+					},
+									
+				}).then( rta => rta.json() ).then( data =>{
+					alert( data.rta )
+				})				
+				*/
+				const configs = {method: evento.target.method,
+				body: JSON.stringify(datos), //pasar de array Objects a JSON
+				headers: {
+				"Content-type" : "application/json"
+					}
+				}
+
+				const request = await fetch(evento.target.action, configs )
+
+				const data = await request.json()
+				const message = data.rta ? 'Producto agregado exitosamente'	: 'El Producto NO pudo agregarse!'		
+				alert( message )
+
+			})
+
+		</script>
+	</body>
+</html>

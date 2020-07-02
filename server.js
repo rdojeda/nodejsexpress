@@ -5,7 +5,7 @@ const server = express()
 
 const urlencoded = express.urlencoded({ extended: true })
 const json = express.json()
-
+const public = express.static('public' )
 
 //en Robo 3T create conexión en Name MongoDb Atlas address cargar  cluster0.xqb2m.mongodb.net mantener port 27017
 
@@ -28,7 +28,8 @@ console.log('El servidor de MongoDB es:')
 console.log( process.env.MONGO_DB_HOST )
 
 server.use( json )
-server.use( urlencoded )
+server.use(urlencoded)
+server.use('/admin', public )
 server.listen( 5000 )
 
 server.get('/api', async (req, res) => { // Obtener los datos
