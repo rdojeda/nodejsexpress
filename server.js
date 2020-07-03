@@ -1,11 +1,14 @@
 const express = require('express')
+const hbs = require('express-handlebars')
 const { MongoClient } = require('mongodb')
 const { ObjectId } = require('mongodb')
 const server = express()
 
 const urlencoded = express.urlencoded({ extended: true })
 const json = express.json()
-const public = express.static('public' )
+const public = express.static(__dirname + '/public' )
+
+
 
 //en Robo 3T create conexión en Name MongoDb Atlas address cargar  cluster0.xqb2m.mongodb.net mantener port 27017
 
@@ -29,8 +32,20 @@ console.log( process.env.MONGO_DB_HOST )
 
 server.use( json )
 server.use(urlencoded)
-server.use('/admin', public )
+server.set('view engine', 'handlebars')
+server.engine('handlebars', hbs() )
+
+server.use('/', public )
 server.listen( 5000 )
+
+//Inicio rutas del Dashboard
+server.get('/admin', (req, res) => {
+    res.render('agregar', { layout: false})
+})
+
+//Fin de rutas del Dashboard
+
+
 
 server.get('/api', async (req, res) => { // Obtener los datos
     
