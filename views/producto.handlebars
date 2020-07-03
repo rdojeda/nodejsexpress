@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>MercadoTech - Gestor de Productos</title>
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-	</head>
-	<body class="container">
-		<h1>Nuevo Producto</h1>
-		<form action="http://localhost:5000/api" method="post">
+		<h1>{{ACCION}} Producto</h1>
+		<form action="http://localhost:4000/api" method="post">
 
 			<label for="nombre">Ingrese nombre Producto :</label>
 			<input class="form-control" type="text" name="nombre" placeholder="Ej: Jugo de Uva">
@@ -24,8 +16,6 @@
 			<input class="form-control" type="precio" name="precio" placeholder="Ej: 15.99">
 
 			<br>
-
-
 
 			<label for="marca">Elija una marca:</label>
 			<select class="form-control" name="marca">
@@ -80,5 +70,3 @@
 			})
 
 		</script>
-	</body>
-</html>

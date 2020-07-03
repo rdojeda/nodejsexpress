@@ -6,9 +6,7 @@ const server = express()
 
 const urlencoded = express.urlencoded({ extended: true })
 const json = express.json()
-const public = express.static(__dirname + '/public' )
-
-
+const public = express.static(__dirname + '/public')
 
 //en Robo 3T create conexión en Name MongoDb Atlas address cargar  cluster0.xqb2m.mongodb.net mantener port 27017
 
@@ -36,12 +34,35 @@ server.set('view engine', 'handlebars')
 server.engine('handlebars', hbs() )
 
 server.use('/', public )
-server.listen( 5000 )
+server.listen( 4000 )
 
 //Inicio rutas del Dashboard
 server.get('/admin', (req, res) => {
-    res.render('agregar', { layout: false})
+    const productos = [{
+        "_id": "5efe6b67ddcebc3710f2dbf6",
+        "nombre": "iPhone X",
+        "stock": "500",
+        "precio": "699",
+        "marca": "apple",
+        "detalle": "Modelo A6253EQ - 64GB - LTE - WiFi 802.11n"
+    }, {
+        "_id": "5efe6c86ddcebc3710f2dbf7",
+        "nombre": "Galaxy S11",
+        "stock": "850",
+        "precio": "799",
+        "marca": "samsung",
+        "detalle": "Modelo SMSG58 JQ - 5G/COVID-19 - WiFi 801.12x"
+    }]
+    
+    res.render('listado', { productos})
 })
+
+server.get('/admin/contacto', (req, res) => {
+    res.render('contacto', {
+        ACCION: 'Contacto'
+    })
+})
+
 
 //Fin de rutas del Dashboard
 
