@@ -16,13 +16,15 @@ const connectDb = async () => {
 
     const client = await MongoClient.connect(url, { useUnifiedTopology: true })
     
-    DB = await client.db('MercadoTech')
+  // DB = await client.db('MercadoTech')
+    return DB = await client.db('MercadoTech')
 }
 
+const port = 4000
 
-let DB = null
+//let DB = null
 
-connectDb()
+//connectDb()
 
 
 console.log('El servidor de MongoDB es:')
@@ -34,42 +36,31 @@ server.set('view engine', 'handlebars')
 server.engine('handlebars', hbs() )
 
 server.use('/', public )
-server.listen( 4000 )
+server.listen( port )
 
 //Inicio rutas del Dashboard
-server.get('/admin', (req, res) => {
-    const productos = [{
-        "_id": "5efe6b67ddcebc3710f2dbf6",
-        "nombre": "iPhone X",
-        "stock": "500",
-        "precio": "699",
-        "marca": "apple",
-        "detalle": "Modelo A6253EQ - 64GB - LTE - WiFi 802.11n"
-    }, {
-        "_id": "5efe6c86ddcebc3710f2dbf7",
-        "nombre": "Galaxy S11",
-        "stock": "850",
-        "precio": "799",
-        "marca": "samsung",
-        "detalle": "Modelo SMSG58 JQ - 5G/COVID-19 - WiFi 801.12x"
-    }]
+server.get('/admin', async (req, res) => {
+    const DB = await connectDb() 
+
+    const productos = await DB.collection('Productos')
+    const resultado = await productos.find({}).toArray()
     
-    res.render('listado', { productos})
+    console.log('Los productos son:')
+    console.log( resultado )
+    res.render('main', { layout : false, items : resultado, url : req.protocol + '://' + req.hostname + ':' + port }) //<--- http://localhost:4000
+    
 })
 
-server.get('/admin/contacto', (req, res) => {
-    res.render('contacto', {
-        ACCION: 'Contacto'
-    })
+server.get('/admin/:id', async (req, res) => {
+    
+    res.end(`Acá se va a editar el producto : ${req.params.id}`)
 })
-
 
 //Fin de rutas del Dashboard
 
 
-
 server.get('/api', async (req, res) => { // Obtener los datos
-    
+    const DB = await connectDb()
     const productos = await DB.collection('Productos')
     const resultado = await productos.find({}).toArray()
 
@@ -82,7 +73,7 @@ server.post('/api', async (req, res) => {  // Crear con datos
         irrepetible
         Autoasignable
     */
-
+    const DB = await connectDb()
     const datos = req.body
     //aca van las validaciones 
     const productos = await DB.collection('Productos')
@@ -93,6 +84,7 @@ server.post('/api', async (req, res) => {  // Crear con datos
 })
 
 server.get('/api/:id', async (req, res) => {
+    const DB = await connectDb()
     const productos = await DB.collection('Productos')
     const ID = req.params.id
 
@@ -105,6 +97,7 @@ server.get('/api/:id', async (req, res) => {
 })
 
 server.put('/api/:id', async (req, res) => { // Actualizar con datos 
+    const DB = await connectDb()
     const ID = req.params.id 
     const datos = req.body 
     
@@ -123,7 +116,7 @@ server.put('/api/:id', async (req, res) => { // Actualizar con datos
 
 
 server.delete('/api/:id', async (req, res) => { // Eliminar los datos
-
+    const DB = await connectDb()
      const ID = req.params.id;
          
      const productos = await DB.collection('Productos')
