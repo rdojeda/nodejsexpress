@@ -34,12 +34,12 @@ const schema = joi.object({
 //NODEMAILER
 //Paso 1 - Crear la conexión con el servidor de email (ethereal)
 const transporter = nodemailer.createTransport({
-    host: process.env.HOST,
-    port: process.env.PORT,
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
     secure: false,
     auth: {
-        user: process.env.USER,
-        pass: process.env.PASS,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
     },
     tls: {
         rejectUnauthorized: false

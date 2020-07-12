@@ -2,6 +2,7 @@ const express = require('express')
 const hbs = require('express-handlebars')
 const { MongoClient } = require('mongodb')
 const { ObjectId } = require('mongodb')
+const jwt = require('jsonwebtoken')
 const server = express()
 
 const urlencoded = express.urlencoded({ extended: true })
@@ -127,4 +128,42 @@ server.delete('/api/:id', async (req, res) => { // Eliminar los datos
 
     res.json({ rta: result.ok })
 }) 
+
+//////////JWT Test
+
+const verifyToken = (req, res, next) => {
+    //aca hay que verificar el token
+    const token = req.query.token
+    jwt.verify(token, process.env.JWT_PASSPHRASE, (error, data) => { 
+        if(error) {
+            res.json({ rta: 'Acceso no autorizado'})  
+        } else {
+            req.user = data.usuario
+            next()
+        }
+    })
+    
+
+}
+
+server.post('/login', (req, res) => {
+
+    const datos = req.body
+
+    if( datos.email == "pepito@gmail.com" && datos.clave == 'pepito') {
+        
+        const token = jwt.sign({ usuario: datos.email, expiresIn: 60}, process.env.JWT_PASSPHRASE)
+        
+        res.json({ rta: 'Estas logueado', token })
+ 
+    } else {
+        res.json({ rta: 'Datos Incorrectos'})
+    }
+
+})
+
+server.get('/check', verifyToken, (req, res) => {
+    //aca voy a decir si el token es valido  o no
+    res.end(`Bienvenido "${req.user}"`)
+})
 
