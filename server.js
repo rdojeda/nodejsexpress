@@ -52,6 +52,20 @@ server.get('/admin', async (req, res) => {
     
 })
 
+server.get('/admin/nuevo', (req, res) => {
+    
+    res.end('Aca hay que crear un nuevo producto')
+
+
+})
+
+server.get('/admin/editar/:id', (req, res) => {
+
+    res.end('Aca hay que editar un producto')
+
+
+})
+
 server.get('/admin/:id', async (req, res) => {
     
     res.end(`Acá se va a editar el producto : ${req.params.id}`)
