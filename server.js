@@ -52,6 +52,9 @@ server.get('/admin', async (req, res) => {
     
 })
 
+/// Dashboard
+
+
 server.get('/admin/nuevo', (req, res) => {
     
     res.end('Aca hay que crear un nuevo producto')
@@ -64,6 +67,11 @@ server.get('/admin/editar/:id', (req, res) => {
     res.end('Aca hay que editar un producto')
 
 
+})
+
+server.get('/admin/ingresar', (req, res) => {
+
+    res.render('login', {layout: false})
 })
 
 server.get('/admin/:id', async (req, res) => {
@@ -178,6 +186,7 @@ server.post('/login', (req, res) => {
 
 server.get('/check', verifyToken, (req, res) => {
     //aca voy a decir si el token es valido  o no
+    
     res.end(`Bienvenido "${req.user}"`)
 })
 
