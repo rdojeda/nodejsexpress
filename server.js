@@ -3,11 +3,14 @@ const hbs = require('express-handlebars')
 const { MongoClient } = require('mongodb')
 const { ObjectId } = require('mongodb')
 const jwt = require('jsonwebtoken')
+const cookieParser = require('cookie-parser')
+
 const server = express()
 
 const urlencoded = express.urlencoded({ extended: true })
 const json = express.json()
 const public = express.static(__dirname + '/public')
+const cookies = cookieParser()
 
 //en Robo 3T create conexión en Name MongoDb Atlas address cargar  cluster0.xqb2m.mongodb.net mantener port 27017
 
@@ -33,11 +36,29 @@ console.log( process.env.MONGO_DB_HOST )
 
 server.use( json )
 server.use(urlencoded)
+server.use( cookies )
 server.set('view engine', 'handlebars')
 server.engine('handlebars', hbs() )
 
 server.use('/', public )
 server.listen( port )
+
+const verifyToken = (req, res, next) => {
+  //aca hay que verificar el token
+  const token = req.cookies._auth;
+
+  console.log(token);
+
+  jwt.verify(token, process.env.JWT_PASSPHRASE, (error, data) => {
+    if (error) {
+      res.redirect("http://localhost:4000/admin/ingresar");
+    } else {
+      req.user = data.usuario;
+      next();
+    }
+  });
+};
+
 
 //Inicio rutas del Dashboard
 server.get('/admin', async (req, res) => {
@@ -52,12 +73,15 @@ server.get('/admin', async (req, res) => {
     
 })
 
+
 /// Dashboard
 
 
-server.get('/admin/nuevo', (req, res) => {
+server.get('/admin/nuevo', verifyToken, (req, res) => {
     
-    res.end('Aca hay que crear un nuevo producto')
+    const hansel = req.cookies._auth
+    res.write(`<p>El token de la cookie es : ${hansel} </p>` )
+    res.end('<p>Aca hay que crear un nuevo producto</p>')
 
 
 })
@@ -81,6 +105,8 @@ server.get('/admin/:id', async (req, res) => {
 
 //Fin de rutas del Dashboard
 
+
+// API REST
 
 server.get('/api', async (req, res) => { // Obtener los datos
     const DB = await connectDb()
@@ -153,20 +179,7 @@ server.delete('/api/:id', async (req, res) => { // Eliminar los datos
 
 //////////JWT Test
 
-const verifyToken = (req, res, next) => {
-    //aca hay que verificar el token
-    const token = req.query.token
-    jwt.verify(token, process.env.JWT_PASSPHRASE, (error, data) => { 
-        if(error) {
-            res.json({ rta: 'Acceso no autorizado'})  
-        } else {
-            req.user = data.usuario
-            next()
-        }
-    })
-    
 
-}
 
 server.post('/login', (req, res) => {
 
@@ -174,9 +187,15 @@ server.post('/login', (req, res) => {
 
     if( datos.email == "pepito@gmail.com" && datos.clave == 'pepito') {
         
+        const vtoTimeStamp = Date.now() + (60 * 1000 * 5)  //Dentro de 5 minutos
+
+        const vtoFecha = new Date ( vtoTimeStamp )
+
         const token = jwt.sign({ usuario: datos.email, expiresIn: 60}, process.env.JWT_PASSPHRASE)
         
-        res.json({ rta: 'Estas logueado', token })
+        res.cookie('_auth', token, {expires : vtoFecha, httpOnly : true, sameSite : 'strict', secure : false })
+
+        res.redirect('http://localhost:4000/admin')
  
     } else {
         res.json({ rta: 'Datos Incorrectos'})
@@ -184,9 +203,13 @@ server.post('/login', (req, res) => {
 
 })
 
+
+/*
+Pruebas de Token
+
 server.get('/check', verifyToken, (req, res) => {
     //aca voy a decir si el token es valido  o no
     
     res.end(`Bienvenido "${req.user}"`)
 })
-
+*/
