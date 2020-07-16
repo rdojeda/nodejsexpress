@@ -26,9 +26,8 @@ const connectDb = async () => {
 
 const port = 4000
 
-//let DB = null
 
-//connectDb()
+const base_url = req => req.protocol + '://' + req.hostname + ':' + port
 
 
 console.log('El servidor de MongoDB es:')
@@ -51,7 +50,7 @@ const verifyToken = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_PASSPHRASE, (error, data) => {
     if (error) {
-      res.redirect("http://localhost:4000/admin/ingresar");
+      res.redirect( base_url(req) + '/admin/ingresar');
     } else {
       req.user = data.usuario;
       next();
@@ -69,13 +68,12 @@ server.get('/admin', async (req, res) => {
     
     console.log('Los productos son:')
     console.log( resultado )
-    res.render('main', { layout : false, items : resultado, url : req.protocol + '://' + req.hostname + ':' + port }) //<--- http://localhost:4000
+    res.render('main', { layout : false, items : resultado, url : base_url(req) }) //<--- http://localhost:4000
     
 })
 
 
 /// Dashboard
-
 
 server.get('/admin/nuevo', verifyToken, (req, res) => {
     
@@ -187,15 +185,16 @@ server.post('/login', (req, res) => {
 
     if( datos.email == "pepito@gmail.com" && datos.clave == 'pepito') {
         
-        const vtoTimeStamp = Date.now() + (60 * 1000 * 5)  //Dentro de 5 minutos
+        const duracion = 5  // minutos
+        const vtoTimeStamp = Date.now() + (60 * 1000 * duracion)  //Dentro de 5 minutos
 
         const vtoFecha = new Date ( vtoTimeStamp )
 
-        const token = jwt.sign({ usuario: datos.email, expiresIn: 60}, process.env.JWT_PASSPHRASE)
+        const token = jwt.sign({ usuario: datos.email, expiresIn: (duracion) * 60 }, process.env.JWT_PASSPHRASE)
         
         res.cookie('_auth', token, {expires : vtoFecha, httpOnly : true, sameSite : 'strict', secure : false })
 
-        res.redirect('http://localhost:4000/admin')
+        res.redirect( base_url(req) + '/admin')
  
     } else {
         res.json({ rta: 'Datos Incorrectos'})
