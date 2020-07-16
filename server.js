@@ -52,7 +52,8 @@ const verifyToken = (req, res, next) => {
     if (error) {
       res.redirect( base_url(req) + '/admin/ingresar');
     } else {
-      req.user = data.usuario;
+      //aca desencripto los datos y accedo al token
+        req.user = data.usuario;
       next();
     }
   });
@@ -66,9 +67,7 @@ server.get('/admin', async (req, res) => {
     const productos = await DB.collection('Productos')
     const resultado = await productos.find({}).toArray()
     
-    console.log('Los productos son:')
-    console.log( resultado )
-    res.render('main', { layout : false, items : resultado, url : base_url(req) }) //<--- http://localhost:4000
+    res.render('panel', { items : resultado, url : base_url(req) }) //<--- http://localhost:4000
     
 })
 
@@ -77,29 +76,22 @@ server.get('/admin', async (req, res) => {
 
 server.get('/admin/nuevo', verifyToken, (req, res) => {
     
-    const hansel = req.cookies._auth
-    res.write(`<p>El token de la cookie es : ${hansel} </p>` )
-    res.end('<p>Aca hay que crear un nuevo producto</p>')
+   res.render('formulario')
 
 
 })
 
 server.get('/admin/editar/:id', (req, res) => {
 
-    res.end('Aca hay que editar un producto')
-
+    res.render('formulario')
 
 })
 
 server.get('/admin/ingresar', (req, res) => {
 
-    res.render('login', {layout: false})
+    res.render('login')
 })
 
-server.get('/admin/:id', async (req, res) => {
-    
-    res.end(`Acá se va a editar el producto : ${req.params.id}`)
-})
 
 //Fin de rutas del Dashboard
 
