@@ -76,27 +76,39 @@ server.get('/admin', async (req, res) => {
 
 server.get('/admin/nuevo', verifyToken, (req, res) => {
     
-   res.render('formulario')
+    res.render('formulario', {
+        url: base_url(req),
+        accion: 'Nuevo',
+        metodo: 'POST'
+    })
 
 
 })
 
-server.get('/admin/editar/:id', (req, res) => {
-
-    res.render('formulario')
+server.get('/admin/editar/:id', verifyToken, async (req, res) => {
+    const ID = req.params.id
+    const DB = await connectDb()
+    const productos = await DB.collection('Productos')
+    const query = { '_id': ObjectId(ID) }
+    const resultado = await productos.find( query ).toArray()
+   ///////////////////////////////////
+    res.render('formulario', {
+        url: base_url(req),
+        accion: 'Actualizar',
+        metodo: 'PUT',
+        ...resultado[0]
+    })
 
 })
 
 server.get('/admin/ingresar', (req, res) => {
 
-    res.render('login')
+    res.render('login', { url: base_url(req) })
 })
-
-
 //Fin de rutas del Dashboard
 
 
-// API REST
+////////// API REST ///////////////////
 
 server.get('/api', async (req, res) => { // Obtener los datos
     const DB = await connectDb()
@@ -167,10 +179,7 @@ server.delete('/api/:id', async (req, res) => { // Eliminar los datos
     res.json({ rta: result.ok })
 }) 
 
-//////////JWT Test
-
-
-
+//////////JWT Login /////////////////
 server.post('/login', (req, res) => {
 
     const datos = req.body
@@ -194,13 +203,3 @@ server.post('/login', (req, res) => {
 
 })
 
-
-/*
-Pruebas de Token
-
-server.get('/check', verifyToken, (req, res) => {
-    //aca voy a decir si el token es valido  o no
-    
-    res.end(`Bienvenido "${req.user}"`)
-})
-*/
